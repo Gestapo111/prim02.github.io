@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluación: El Movimiento (Física)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            color: #333;
+        }
+        .quiz-container {
+            background-color: #fff;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 800px;
+        }
+        .question {
+            margin-bottom: 15px;
+        }
+        .options {
+            list-style-type: none;
+            padding: 0;
+        }
+        .options li {
+            margin-bottom: 10px;
+        }
+        button {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        #results {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+        footer {
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            width: 100%;
+            text-align: center;
+            position: fixed;
+            bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Evaluación: El Movimiento (Física)</h1>
+    <div class="quiz-container">
+        <div id="quiz"></div>
+        <button id="submit">Enviar respuestas</button>
+        <div id="results"></div>
+    </div>
+    <footer>
+        &copy; Derechos Reservados Prof. Alberto Sanchez
+    </footer>
+    <script>
+        const quizData = [
+            {
+                question: "¿Qué es la velocidad?",
+                answers: [
+                    { text: "La distancia recorrida por unidad de tiempo.", correct: true },
+                    { text: "La rapidez con una dirección específica.", correct: false },
+                    { text: "La aceleración por unidad de tiempo.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es la aceleración?",
+                answers: [
+                    { text: "El cambio en la velocidad por unidad de tiempo.", correct: true },
+                    { text: "La distancia recorrida en un tiempo dado.", correct: false },
+                    { text: "El desplazamiento en un tiempo dado.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué establece la primera ley de Newton?",
+                answers: [
+                    { text: "Un objeto en reposo permanecerá en reposo y un objeto en movimiento permanecerá en movimiento a menos que actúe sobre él una fuerza externa.", correct: true },
+                    { text: "La fuerza es igual a la masa por la aceleración.", correct: false },
+                    { text: "Para cada acción, hay una reacción igual y opuesta.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es la inercia?",
+                answers: [
+                    { text: "La resistencia de un objeto a cambiar su estado de movimiento.", correct: true },
+                    { text: "La fuerza que actúa sobre un objeto en reposo.", correct: false },
+                    { text: "La velocidad de un objeto en movimiento.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué establece la segunda ley de Newton?",
+                answers: [
+                    { text: "La fuerza es igual a la masa por la aceleración.", correct: true },
+                    { text: "Un objeto en reposo permanecerá en reposo.", correct: false },
+                    { text: "Para cada acción, hay una reacción igual y opuesta.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es la fuerza neta?",
+                answers: [
+                    { text: "La suma de todas las fuerzas actuando sobre un objeto.", correct: true },
+                    { text: "La fuerza individual en un objeto.", correct: false },
+                    { text: "La aceleración de un objeto.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es la fuerza de fricción?",
+                answers: [
+                    { text: "La fuerza que resiste el movimiento de un objeto.", correct: true },
+                    { text: "La fuerza que acelera un objeto.", correct: false },
+                    { text: "La fuerza que detiene un objeto en reposo.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es el desplazamiento?",
+                answers: [
+                    { text: "La distancia y dirección de la posición final respecto a la posición inicial.", correct: true },
+                    { text: "La distancia total recorrida por un objeto.", correct: false },
+                    { text: "La velocidad de un objeto en movimiento.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es la tercera ley de Newton?",
+                answers: [
+                    { text: "Para cada acción, hay una reacción igual y opuesta.", correct: true },
+                    { text: "La fuerza es igual a la masa por la aceleración.", correct: false },
+                    { text: "Un objeto en reposo permanecerá en reposo.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es la energía cinética?",
+                answers: [
+                    { text: "La energía de un objeto debido a su movimiento.", correct: true },
+                    { text: "La energía almacenada en un objeto.", correct: false },
+                    { text: "La energía de un objeto en reposo.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es la energía potencial?",
+                answers: [
+                    { text: "La energía almacenada en un objeto debido a su posición.", correct: true },
+                    { text: "La energía de un objeto en movimiento.", correct: false },
+                    { text: "La energía de un objeto en reposo.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es el trabajo en física?",
+                answers: [
+                    { text: "La transferencia de energía a través del movimiento.", correct: true },
+                    { text: "La velocidad de un objeto en movimiento.", correct: false },
+                    { text: "La fuerza aplicada a un objeto.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es la potencia en física?",
+                answers: [
+                    { text: "La cantidad de trabajo realizado por unidad de tiempo.", correct: true },
+                    { text: "La cantidad de energía almacenada en un objeto.", correct: false },
+                    { text: "La cantidad de fuerza aplicada a un objeto.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es un vector?",
+                answers: [
+                    { text: "Una cantidad que tiene magnitud y dirección.", correct: true },
+                    { text: "Una cantidad que solo tiene magnitud.", correct: false },
+                    { text: "Una cantidad que solo tiene dirección.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es la velocidad promedio?",
+                answers: [
+                    { text: "La distancia total recorrida dividida por el tiempo total.", correct: true },
+                    { text: "La velocidad en un instante específico.", correct: false },
+                    { text: "La aceleración dividida por el tiempo total.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es la velocidad instantánea?",
+                answers: [
+                    { text: "La velocidad en un instante específico.", correct: true },
+                    { text: "La distancia total recorrida dividida por el tiempo total.", correct: false },
+                    { text: "La aceleración dividida por el tiempo total.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es la trayectoria?",
+                answers: [
+                    { text: "El camino que sigue un objeto en movimiento.", correct: true },
+                    { text: "La distancia recorrida por un objeto.", correct: false },
+                    { text: "La velocidad de un objeto en movimiento.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es el movimiento rectilíneo uniforme?",
+                answers: [
+                    { text: "El movimiento en línea recta a velocidad constante.", correct: true },
+                    { text: "El movimiento en línea recta con aceleración constante.", correct: false },
+                    { text: "El movimiento en un círculo a velocidad constante.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es el movimiento rectilíneo uniformemente acelerado?",
+                answers: [
+                    { text: "El movimiento en línea recta con aceleración constante.", correct: true },
+                    { text: "El movimiento en línea recta a velocidad constante.", correct: false },
+                    { text: "El movimiento en un círculo a velocidad constante.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es el movimiento circular uniforme?",
+                answers: [
+                    { text: "El movimiento en un círculo a velocidad constante.", correct: true },
+                    { text: "El movimiento en un círculo con aceleración constante.", correct: false },
+                    { text: "El movimiento en línea recta a velocidad constante.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es la aceleración centrípeta?",
+                answers: [
+                    { text: "La aceleración dirigida hacia el centro de un círculo.", correct: true },
+                    { text: "La aceleración en línea recta.", correct: false },
+                    { text: "La aceleración en un plano inclinado.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es el movimiento armónico simple?",
+                answers: [
+                    { text: "El movimiento periódico de un objeto en torno a una posición de equilibrio.", correct: true },
+                    { text: "El movimiento en línea recta a velocidad constante.", correct: false },
+                    { text: "El movimiento circular a velocidad constante.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es la frecuencia en el movimiento ondulatorio?",
+                answers: [
+                    { text: "El número de oscilaciones por unidad de tiempo.", correct: true },
+                    { text: "La distancia entre dos puntos consecutivos en una onda.", correct: false },
+                    { text: "La altura máxima de una onda.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es la longitud de onda?",
+                answers: [
+                    { text: "La distancia entre dos puntos consecutivos en una onda.", correct: true },
+                    { text: "El número de oscilaciones por unidad de tiempo.", correct: false },
+                    { text: "La altura máxima de una onda.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es la amplitud en el movimiento ondulatorio?",
+                answers: [
+                    { text: "La altura máxima de una onda.", correct: true },
+                    { text: "La distancia entre dos puntos consecutivos en una onda.", correct: false },
+                    { text: "El número de oscilaciones por unidad de tiempo.", correct: false }
+                ]
+            }
+        ];
+
+        let attempt = 0;
+        const maxAttempts = 3;
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function loadQuiz() {
+            const quizContainer = document.getElementById('quiz');
+            quizContainer.innerHTML = '';
+            quizData.forEach((data, index) => {
+                const questionContainer = document.createElement('div');
+                questionContainer.className = 'question';
+
+                const questionTitle = document.createElement('h3');
+                questionTitle.innerText = `${index + 1}. ${data.question}`;
+                questionContainer.appendChild(questionTitle);
+
+                const optionsList = document.createElement('ul');
+                optionsList.className = 'options';
+
+                shuffle(data.answers).forEach(answer => {
+                    const option = document.createElement('li');
+                    const optionLabel = document.createElement('label');
+                    const optionInput = document.createElement('input');
+                    optionInput.type = 'radio';
+                    optionInput.name = `question${index}`;
+                    optionInput.value = answer.correct;
+                    optionLabel.appendChild(optionInput);
+                    optionLabel.appendChild(document.createTextNode(answer.text));
+                    option.appendChild(optionLabel);
+                    optionsList.appendChild(option);
+                });
+
+                questionContainer.appendChild(optionsList);
+                quizContainer.appendChild(questionContainer);
+            });
+        }
+
+        function submitQuiz() {
+            if (attempt >= maxAttempts) {
+                alert('Has alcanzado el número máximo de intentos.');
+                return;
+            }
+
+            const resultsContainer = document.getElementById('results');
+            const answers = document.querySelectorAll('input[type="radio"]:checked');
+            let score = 0;
+
+            quizData.forEach((data, index) => {
+                const selected = answers[index] ? answers[index].value === 'true' : null;
+                if (selected === true) {
+                    score += 0.4; // Each correct answer is worth 0.4 points
+                }
+            });
+
+            score = Math.round(score * 10) / 10; // Round to one decimal place
+            let feedback = quizData.map((data, index) => {
+                const selected = answers[index] ? answers[index].value === 'true' : null;
+                let result;
+                if (selected === null) {
+                    result = "No contestada";
+                } else if (selected === true) {
+                    result = "Correcta";
+                } else {
+                    result = "Incorrecta";
+                }
+                return `<p>${index + 1}. ${result}</p>`;
+            }).join("");
+
+            resultsContainer.innerHTML = `<h3>Resultados:</h3><p>Puntaje: ${score} / 10</p>${feedback}`;
+
+            attempt++;
+            if (attempt >= maxAttempts) {
+                alert('Has alcanzado el número máximo de intentos.');
+            }
+        }
+
+        document.getElementById('submit').addEventListener('click', submitQuiz);
+
+        loadQuiz();
+    </script>
+</body>
+</html>
