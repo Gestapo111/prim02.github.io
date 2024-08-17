@@ -3,365 +3,490 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Evaluación: El Movimiento (Física)</title>
+    <title>Unidad 2: El Movimiento</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        h1 {
-            color: #333;
-        }
-        .quiz-container {
-            background-color: #fff;
             padding: 20px;
-            margin: 20px 0;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
             border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 80%;
-            max-width: 800px;
+        }
+        h1, h2 {
+            text-align: center;
         }
         .question {
-            margin-bottom: 15px;
+            margin: 20px 0;
         }
-        .options {
-            list-style-type: none;
-            padding: 0;
-        }
-        .options li {
+        .question label {
+            font-weight: bold;
+            display: block;
             margin-bottom: 10px;
         }
-        button {
+        .question .options {
+            margin-left: 20px;
+        }
+        .question .options input {
+            margin-right: 10px;
+        }
+        .popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            justify-content: center;
+            align-items: center;
+        }
+        .popup-content {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        }
+        .popup-content input {
+            margin-bottom: 20px;
+            padding: 15px;
+            width: 80%;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .popup-content button {
+            padding: 15px 30px;
             background-color: #28a745;
             color: #fff;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-            border-radius: 5px;
             font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
         }
-        button:hover {
-            background-color: #218838;
-        }
-        #results {
-            margin-top: 20px;
-            font-size: 18px;
-        }
-        footer {
-            background-color: #333;
+        button.submit-btn {
+            padding: 15px 30px;
+            background-color: #007bff;
             color: #fff;
-            padding: 10px;
+            font-size: 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            display: block;
             width: 100%;
             text-align: center;
-            position: fixed;
-            bottom: 0;
+        }
+        button.submit-btn:hover {
+            background-color: #0056b3;
+        }
+        #timer {
+            text-align: center;
+            font-size: 20px;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
-    <h1>Evaluación: El Movimiento (Física)</h1>
-    <div class="quiz-container">
-        <div id="quiz"></div>
-        <button id="submit">Enviar respuestas</button>
-        <div id="results"></div>
+
+<div class="popup" id="popup">
+    <div class="popup-content">
+        <h2>Complete la siguiente información</h2>
+        <input type="text" id="nombre" placeholder="Nombre Completo" required>
+        <input type="text" id="nie" placeholder="NIE" required>
+        <button onclick="validatePopup()">Continuar</button>
     </div>
-    <footer>
-        &copy; Derechos Reservados Prof. Alberto Sanchez
-    </footer>
-    <script>
-        const quizData = [
-            {
-                question: "¿Qué es la velocidad?",
-                answers: [
-                    { text: "La distancia recorrida por unidad de tiempo.", correct: true },
-                    { text: "La rapidez con una dirección específica.", correct: false },
-                    { text: "La aceleración por unidad de tiempo.", correct: false }
-                ]
-            },
-            {
-                question: "¿Qué es la aceleración?",
-                answers: [
-                    { text: "El cambio en la velocidad por unidad de tiempo.", correct: true },
-                    { text: "La distancia recorrida en un tiempo dado.", correct: false },
-                    { text: "El desplazamiento en un tiempo dado.", correct: false }
-                ]
-            },
-            {
-                question: "¿Qué establece la primera ley de Newton?",
-                answers: [
-                    { text: "Un objeto en reposo permanecerá en reposo y un objeto en movimiento permanecerá en movimiento a menos que actúe sobre él una fuerza externa.", correct: true },
-                    { text: "La fuerza es igual a la masa por la aceleración.", correct: false },
-                    { text: "Para cada acción, hay una reacción igual y opuesta.", correct: false }
-                ]
-            },
-            {
-                question: "¿Qué es la inercia?",
-                answers: [
-                    { text: "La resistencia de un objeto a cambiar su estado de movimiento.", correct: true },
-                    { text: "La fuerza que actúa sobre un objeto en reposo.", correct: false },
-                    { text: "La velocidad de un objeto en movimiento.", correct: false }
-                ]
-            },
-            {
-                question: "¿Qué establece la segunda ley de Newton?",
-                answers: [
-                    { text: "La fuerza es igual a la masa por la aceleración.", correct: true },
-                    { text: "Un objeto en reposo permanecerá en reposo.", correct: false },
-                    { text: "Para cada acción, hay una reacción igual y opuesta.", correct: false }
-                ]
-            },
-            {
-                question: "¿Qué es la fuerza neta?",
-                answers: [
-                    { text: "La suma de todas las fuerzas actuando sobre un objeto.", correct: true },
-                    { text: "La fuerza individual en un objeto.", correct: false },
-                    { text: "La aceleración de un objeto.", correct: false }
-                ]
-            },
-            {
-                question: "¿Qué es la fuerza de fricción?",
-                answers: [
-                    { text: "La fuerza que resiste el movimiento de un objeto.", correct: true },
-                    { text: "La fuerza que acelera un objeto.", correct: false },
-                    { text: "La fuerza que detiene un objeto en reposo.", correct: false }
-                ]
-            },
-            {
-                question: "¿Qué es el desplazamiento?",
-                answers: [
-                    { text: "La distancia y dirección de la posición final respecto a la posición inicial.", correct: true },
-                    { text: "La distancia total recorrida por un objeto.", correct: false },
-                    { text: "La velocidad de un objeto en movimiento.", correct: false }
-                ]
-            },
-            {
-                question: "¿Qué es la tercera ley de Newton?",
-                answers: [
-                    { text: "Para cada acción, hay una reacción igual y opuesta.", correct: true },
-                    { text: "La fuerza es igual a la masa por la aceleración.", correct: false },
-                    { text: "Un objeto en reposo permanecerá en reposo.", correct: false }
-                ]
-            },
-            {
-                question: "¿Qué es la energía cinética?",
-                answers: [
-                    { text: "La energía de un objeto debido a su movimiento.", correct: true },
-                    { text: "La energía almacenada en un objeto.", correct: false },
-                    { text: "La energía de un objeto en reposo.", correct: false }
-                ]
-            },
-            {
-                question: "¿Qué es la energía potencial?",
-                answers: [
-                    { text: "La energía almacenada en un objeto debido a su posición.", correct: true },
-                    { text: "La energía de un objeto en movimiento.", correct: false },
-                    { text: "La energía de un objeto en reposo.", correct: false }
-                ]
-            },
-            {
-                question: "¿Qué es el trabajo en física?",
-                answers: [
-                    { text: "La transferencia de energía a través del movimiento.", correct: true },
-                    { text: "La velocidad de un objeto en movimiento.", correct: false },
-                    { text: "La fuerza aplicada a un objeto.", correct: false }
-                ]
-            },
-            {
-                question: "¿Qué es la potencia en física?",
-                answers: [
-                    { text: "La cantidad de trabajo realizado por unidad de tiempo.", correct: true },
-                    { text: "La cantidad de energía almacenada en un objeto.", correct: false },
-                    { text: "La cantidad de fuerza aplicada a un objeto.", correct: false }
-                ]
-            },
-            {
-                question: "¿Qué es un vector?",
-                answers: [
-                    { text: "Una cantidad que tiene magnitud y dirección.", correct: true },
-                    { text: "Una cantidad que solo tiene magnitud.", correct: false },
-                    { text: "Una cantidad que solo tiene dirección.", correct: false }
-                ]
-            },
-            {
-                question: "¿Qué es la velocidad promedio?",
-                answers: [
-                    { text: "La distancia total recorrida dividida por el tiempo total.", correct: true },
-                    { text: "La velocidad en un instante específico.", correct: false },
-                    { text: "La aceleración dividida por el tiempo total.", correct: false }
-                ]
-            },
-            {
-                question: "¿Qué es la velocidad instantánea?",
-                answers: [
-                    { text: "La velocidad en un instante específico.", correct: true },
-                    { text: "La distancia total recorrida dividida por el tiempo total.", correct: false },
-                    { text: "La aceleración dividida por el tiempo total.", correct: false }
-                ]
-            },
-            {
-                question: "¿Qué es la trayectoria?",
-                answers: [
-                    { text: "El camino que sigue un objeto en movimiento.", correct: true },
-                    { text: "La distancia recorrida por un objeto.", correct: false },
-                    { text: "La velocidad de un objeto en movimiento.", correct: false }
-                ]
-            },
-            {
-                question: "¿Qué es el movimiento rectilíneo uniforme?",
-                answers: [
-                    { text: "El movimiento en línea recta a velocidad constante.", correct: true },
-                    { text: "El movimiento en línea recta con aceleración constante.", correct: false },
-                    { text: "El movimiento en un círculo a velocidad constante.", correct: false }
-                ]
-            },
-            {
-                question: "¿Qué es el movimiento rectilíneo uniformemente acelerado?",
-                answers: [
-                    { text: "El movimiento en línea recta con aceleración constante.", correct: true },
-                    { text: "El movimiento en línea recta a velocidad constante.", correct: false },
-                    { text: "El movimiento en un círculo a velocidad constante.", correct: false }
-                ]
-            },
-            {
-                question: "¿Qué es el movimiento circular uniforme?",
-                answers: [
-                    { text: "El movimiento en un círculo a velocidad constante.", correct: true },
-                    { text: "El movimiento en un círculo con aceleración constante.", correct: false },
-                    { text: "El movimiento en línea recta a velocidad constante.", correct: false }
-                ]
-            },
-            {
-                question: "¿Qué es la aceleración centrípeta?",
-                answers: [
-                    { text: "La aceleración dirigida hacia el centro de un círculo.", correct: true },
-                    { text: "La aceleración en línea recta.", correct: false },
-                    { text: "La aceleración en un plano inclinado.", correct: false }
-                ]
-            },
-            {
-                question: "¿Qué es el movimiento armónico simple?",
-                answers: [
-                    { text: "El movimiento periódico de un objeto en torno a una posición de equilibrio.", correct: true },
-                    { text: "El movimiento en línea recta a velocidad constante.", correct: false },
-                    { text: "El movimiento circular a velocidad constante.", correct: false }
-                ]
-            },
-            {
-                question: "¿Qué es la frecuencia en el movimiento ondulatorio?",
-                answers: [
-                    { text: "El número de oscilaciones por unidad de tiempo.", correct: true },
-                    { text: "La distancia entre dos puntos consecutivos en una onda.", correct: false },
-                    { text: "La altura máxima de una onda.", correct: false }
-                ]
-            },
-            {
-                question: "¿Qué es la longitud de onda?",
-                answers: [
-                    { text: "La distancia entre dos puntos consecutivos en una onda.", correct: true },
-                    { text: "El número de oscilaciones por unidad de tiempo.", correct: false },
-                    { text: "La altura máxima de una onda.", correct: false }
-                ]
-            },
-            {
-                question: "¿Qué es la amplitud en el movimiento ondulatorio?",
-                answers: [
-                    { text: "La altura máxima de una onda.", correct: true },
-                    { text: "La distancia entre dos puntos consecutivos en una onda.", correct: false },
-                    { text: "El número de oscilaciones por unidad de tiempo.", correct: false }
-                ]
-            }
-        ];
+</div>
 
-        let attempt = 0;
-        const maxAttempts = 3;
+<div class="container" id="evaluation" style="display:none;">
+    <h1>Unidad 2: El Movimiento</h1>
+    <div id="timer">Tiempo restante: 30:00</div>
 
-        function shuffle(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
+    <!-- Indicador 2.1 -->
+    <h2>Indicador 2.1: Movimiento de caída libre y tiro vertical</h2>
+    <div class="question">
+        <label>1. ¿Qué velocidad tiene un objeto en el punto más alto de su trayectoria en un tiro vertical?</label>
+        <div class="options">
+            <label><input type="radio" name="q1" value="correcto" required> A. 0 m/s.</label><br>
+            <label><input type="radio" name="q1" value="incorrecto" required> B. Máxima velocidad.</label><br>
+            <label><input type="radio" name="q1" value="incorrecto" required> C. Velocidad negativa.</label><br>
+            <label><input type="radio" name="q1" value="incorrecto" required> D. Velocidad constante.</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <label>2. ¿Cómo varía la aceleración de un objeto durante la caída libre?</label>
+        <div class="options">
+            <label><input type="radio" name="q2" value="correcto" required> A. Es constante e igual a la gravedad.</label><br>
+            <label><input type="radio" name="q2" value="incorrecto" required> B. Aumenta con el tiempo.</label><br>
+            <label><input type="radio" name="q2" value="incorrecto" required> C. Disminuye con la altura.</label><br>
+            <label><input type="radio" name="q2" value="incorrecto" required> D. Es cero al llegar al suelo.</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <label>3. Si se lanzan dos objetos desde la misma altura, uno hacia arriba y otro hacia abajo, ¿cuál llegará primero al suelo?</label>
+        <div class="options">
+            <label><input type="radio" name="q3" value="correcto" required> A. El que se lanzó hacia abajo.</label><br>
+            <label><input type="radio" name="q3" value="incorrecto" required> B. El que se lanzó hacia arriba.</label><br>
+            <label><input type="radio" name="q3" value="incorrecto" required> C. Ambos llegan al mismo tiempo.</label><br>
+            <label><input type="radio" name="q3" value="incorrecto" required> D. Ninguno, se quedan en el aire.</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <label>4. Un objeto se lanza verticalmente hacia arriba. ¿Cómo cambia su velocidad mientras asciende?</label>
+        <div class="options">
+            <label><input type="radio" name="q4" value="correcto" required> A. Disminuye hasta llegar a cero.</label><br>
+            <label><input type="radio" name="q4" value="incorrecto" required> B. Aumenta hasta llegar al máximo.</label><br>
+            <label><input type="radio" name="q4" value="incorrecto" required> C. Se mantiene constante.</label><br>
+            <label><input type="radio" name="q4" value="incorrecto" required> D. Aumenta y luego disminuye.</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <label>5. ¿Qué sucede con la energía cinética de un objeto en caída libre al acercarse al suelo?</label>
+        <div class="options">
+            <label><input type="radio" name="q5" value="correcto" required> A. Aumenta.</label><br>
+            <label><input type="radio" name="q5" value="incorrecto" required> B. Disminuye.</label><br>
+            <label><input type="radio" name="q5" value="incorrecto" required> C. Se mantiene constante.</label><br>
+            <label><input type="radio" name="q5" value="incorrecto" required> D. Se convierte en energía potencial.</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <label>6. ¿Qué sucede con la energía potencial de un objeto en caída libre al acercarse al suelo?</label>
+        <div class="options">
+            <label><input type="radio" name="q6" value="correcto" required> A. Disminuye.</label><br>
+            <label><input type="radio" name="q6" value="incorrecto" required> B. Aumenta.</label><br>
+            <label><input type="radio" name="q6" value="incorrecto" required> C. Se mantiene constante.</label><br>
+            <label><input type="radio" name="q6" value="incorrecto" required> D. Se convierte en energía cinética.</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <label>7. ¿Cuál es la aceleración de un objeto en caída libre en ausencia de resistencia del aire?</label>
+        <div class="options">
+            <label><input type="radio" name="q7" value="correcto" required> A. 9.8 m/s².</label><br>
+            <label><input type="radio" name="q7" value="incorrecto" required> B. Depende de la masa del objeto.</label><br>
+            <label><input type="radio" name="q7" value="incorrecto" required> C. 0 m/s².</label><br>
+            <label><input type="radio" name="q7" value="incorrecto" required> D. Aumenta con el tiempo.</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <label>8. Un objeto se deja caer desde una altura y tarda 4 segundos en llegar al suelo. ¿Qué altura tenía?</label>
+        <div class="options">
+            <label><input type="radio" name="q8" value="correcto" required> A. Aproximadamente 78.4 m.</label><br>
+            <label><input type="radio" name="q8" value="incorrecto" required> B. Aproximadamente 19.6 m.</label><br>
+            <label><input type="radio" name="q8" value="incorrecto" required> C. Aproximadamente 39.2 m.</label><br>
+            <label><input type="radio" name="q8" value="incorrecto" required> D. Aproximadamente 9.8 m.</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <label>9. Un objeto se lanza hacia arriba con una velocidad inicial de 20 m/s. ¿Cuánto tiempo tarda en alcanzar su altura máxima?</label>
+        <div class="options">
+            <label><input type="radio" name="q9" value="correcto" required> A. 2 segundos.</label><br>
+            <label><input type="radio" name="q9" value="incorrecto" required> B. 4 segundos.</label><br>
+            <label><input type="radio" name="q9" value="incorrecto" required> C. 10 segundos.</label><br>
+            <label><input type="radio" name="q9" value="incorrecto" required> D. 1 segundo.</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <label>10. ¿Qué sucede con la velocidad de un objeto en caída libre justo antes de tocar el suelo?</label>
+        <div class="options">
+            <label><input type="radio" name="q10" value="correcto" required> A. Es máxima.</label><br>
+            <label><input type="radio" name="q10" value="incorrecto" required> B. Disminuye a cero.</label><br>
+            <label><input type="radio" name="q10" value="incorrecto" required> C. Es constante.</label><br>
+            <label><input type="radio" name="q10" value="incorrecto" required> D. Es mínima.</label>
+        </div>
+    </div>
+
+    <!-- Indicador 2.2 -->
+    <h2>Indicador 2.2: Movimiento parabólico</h2>
+    <div class="question">
+        <label>11. ¿Cuál es la trayectoria de un objeto que se lanza en un ángulo hacia el horizonte?</label>
+        <div class="options">
+            <label><input type="radio" name="q11" value="correcto" required> A. Parabólica.</label><br>
+            <label><input type="radio" name="q11" value="incorrecto" required> B. Rectilínea.</label><br>
+            <label><input type="radio" name="q11" value="incorrecto" required> C. Circular.</label><br>
+            <label><input type="radio" name="q11" value="incorrecto" required> D. Elíptica.</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <label>12. ¿Qué componente de la velocidad permanece constante en un movimiento parabólico?</label>
+        <div class="options">
+            <label><input type="radio" name="q12" value="correcto" required> A. La componente horizontal.</label><br>
+            <label><input type="radio" name="q12" value="incorrecto" required> B. La componente vertical.</label><br>
+            <label><input type="radio" name="q12" value="incorrecto" required> C. Ambas componentes.</label><br>
+            <label><input type="radio" name="q12" value="incorrecto" required> D. Ninguna, ambas cambian.</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <label>13. ¿Qué sucede con la componente vertical de la velocidad de un objeto en movimiento parabólico?</label>
+        <div class="options">
+            <label><input type="radio" name="q13" value="correcto" required> A. Cambia debido a la aceleración de la gravedad.</label><br>
+            <label><input type="radio" name="q13" value="incorrecto" required> B. Permanece constante.</label><br>
+            <label><input type="radio" name="q13" value="incorrecto" required> C. Aumenta a medida que el objeto sube.</label><br>
+            <label><input type="radio" name="q13" value="incorrecto" required> D. Disminuye solo cuando el objeto desciende.</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <label>14. ¿Cómo se relaciona el ángulo de lanzamiento con el alcance de un objeto en movimiento parabólico?</label>
+        <div class="options">
+            <label><input type="radio" name="q14" value="correcto" required> A. Un ángulo de 45° maximiza el alcance.</label><br>
+            <label><input type="radio" name="q14" value="incorrecto" required> B. Un ángulo de 90° maximiza el alcance.</label><br>
+            <label><input type="radio" name="q14" value="incorrecto" required> C. Un ángulo de 30° maximiza el alcance.</label><br>
+            <label><input type="radio" name="q14" value="incorrecto" required> D. Un ángulo de 60° maximiza el alcance.</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <label>15. En un movimiento parabólico, ¿qué sucede con la altura máxima si aumentamos la velocidad inicial?</label>
+        <div class="options">
+            <label><input type="radio" name="q15" value="correcto" required> A. Aumenta.</label><br>
+            <label><input type="radio" name="q15" value="incorrecto" required> B. Disminuye.</label><br>
+            <label><input type="radio" name="q15" value="incorrecto" required> C. Permanece constante.</label><br>
+            <label><input type="radio" name="q15" value="incorrecto" required> D. Desaparece.</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <label>16. ¿Qué efecto tiene la gravedad en un movimiento parabólico?</label>
+        <div class="options">
+            <label><input type="radio" name="q16" value="correcto" required> A. Solo afecta la componente vertical de la velocidad.</label><br>
+            <label><input type="radio" name="q16" value="incorrecto" required> B. Solo afecta la componente horizontal de la velocidad.</label><br>
+            <label><input type="radio" name="q16" value="incorrecto" required> C. Afecta tanto la componente horizontal como la vertical de la velocidad.</label><br>
+            <label><input type="radio" name="q16" value="incorrecto" required> D. No tiene ningún efecto.</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <label>17. ¿Qué ángulo de lanzamiento proporciona el mayor tiempo en el aire para un objeto en movimiento parabólico?</label>
+        <div class="options">
+            <label><input type="radio" name="q17" value="correcto" required> A. 90°.</label><br>
+            <label><input type="radio" name="q17" value="incorrecto" required> B. 45°.</label><br>
+            <label><input type="radio" name="q17" value="incorrecto" required> C. 60°.</label><br>
+            <label><input type="radio" name="q17" value="incorrecto" required> D. 30°.</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <label>18. En un movimiento parabólico, si la velocidad inicial es duplicada, ¿qué sucede con el alcance?</label>
+        <div class="options">
+            <label><input type="radio" name="q18" value="correcto" required> A. Se duplica.</label><br>
+            <label><input type="radio" name="q18" value="incorrecto" required> B. Se reduce a la mitad.</label><br>
+            <label><input type="radio" name="q18" value="incorrecto" required> C. Permanece constante.</label><br>
+            <label><input type="radio" name="q18" value="incorrecto" required> D. Cuadruplica.</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <label>19. ¿Qué efecto tiene la resistencia del aire en el movimiento parabólico de un objeto?</label>
+        <div class="options">
+            <label><input type="radio" name="q19" value="correcto" required> A. Reduce el alcance y la altura máxima.</label><br>
+            <label><input type="radio" name="q19" value="incorrecto" required> B. Aumenta el alcance y la altura máxima.</label><br>
+            <label><input type="radio" name="q19" value="incorrecto" required> C. No tiene ningún efecto.</label><br>
+            <label><input type="radio" name="q19" value="incorrecto" required> D. Solo afecta la componente horizontal de la velocidad.</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <label>20. En un movimiento parabólico, ¿qué sucede si un objeto se lanza en un ángulo de 90°?</label>
+        <div class="options">
+            <label><input type="radio" name="q20" value="correcto" required> A. El objeto alcanza su altura máxima pero no tiene alcance horizontal.</label><br>
+            <label><input type="radio" name="q20" value="incorrecto" required> B. El objeto alcanza el máximo alcance horizontal.</label><br>
+            <label><input type="radio" name="q20" value="incorrecto" required> C. El objeto se mueve en línea recta.</label><br>
+            <label><input type="radio" name="q20" value="incorrecto" required> D. El objeto no se mueve.</label>
+        </div>
+    </div>
+
+    <!-- Indicador 2.3 -->
+    <h2>Indicador 2.3: Relatividad del movimiento en diferentes circunstancias</h2>
+    <div class="question">
+        <label>21. Si un tren se mueve a 80 km/h y un pasajero camina hacia la parte trasera del tren a 5 km/h, ¿cuál es la velocidad del pasajero con respecto a un observador en la estación?</label>
+        <div class="options">
+            <label><input type="radio" name="q21" value="correcto" required> A. 75 km/h.</label><br>
+            <label><input type="radio" name="q21" value="incorrecto" required> B. 85 km/h.</label><br>
+            <label><input type="radio" name="q21" value="incorrecto" required> C. 80 km/h.</label><br>
+            <label><input type="radio" name="q21" value="incorrecto" required> D. 5 km/h.</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <label>22. Un avión vuela a 600 km/h con un viento de cola de 100 km/h. ¿Cuál es la velocidad del avión con respecto al suelo?</label>
+        <div class="options">
+            <label><input type="radio" name="q22" value="correcto" required> A. 700 km/h.</label><br>
+            <label><input type="radio" name="q22" value="incorrecto" required> B. 500 km/h.</label><br>
+            <label><input type="radio" name="q22" value="incorrecto" required> C. 600 km/h.</label><br>
+            <label><input type="radio" name="q22" value="incorrecto" required> D. 100 km/h.</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <label>23. ¿Cómo se afecta la percepción de la velocidad de un objeto cuando se observa desde un vehículo en movimiento en la misma dirección?</label>
+        <div class="options">
+            <label><input type="radio" name="q23" value="correcto" required> A. La velocidad percibida es menor.</label><br>
+            <label><input type="radio" name="q23" value="incorrecto" required> B. La velocidad percibida es mayor.</label><br>
+            <label><input type="radio" name="q23" value="incorrecto" required> C. La velocidad percibida es la misma.</label><br>
+            <label><input type="radio" name="q23" value="incorrecto" required> D. No se percibe movimiento.</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <label>24. ¿Qué sucede con la velocidad relativa de dos vehículos que se mueven en direcciones opuestas?</label>
+        <div class="options">
+            <label><input type="radio" name="q24" value="correcto" required> A. Se suma.</label><br>
+            <label><input type="radio" name="q24" value="incorrecto" required> B. Se resta.</label><br>
+            <label><input type="radio" name="q24" value="incorrecto" required> C. Permanece constante.</label><br>
+            <label><input type="radio" name="q24" value="incorrecto" required> D. Es igual a la mayor velocidad de los dos.</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <label>25. Si un barco navega a 20 km/h en un río con una corriente de 5 km/h en la misma dirección, ¿cuál es la velocidad del barco con respecto a la orilla?</label>
+        <div class="options">
+            <label><input type="radio" name="q25" value="correcto" required> A. 25 km/h.</label><br>
+            <label><input type="radio" name="q25" value="incorrecto" required> B. 20 km/h.</label><br>
+            <label><input type="radio" name="q25" value="incorrecto" required> C. 15 km/h.</label><br>
+            <label><input type="radio" name="q25" value="incorrecto" required> D. 5 km/h.</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <label>26. ¿Qué sucede con la percepción de la velocidad cuando dos vehículos se mueven a la misma velocidad y en la misma dirección?</label>
+        <div class="options">
+            <label><input type="radio" name="q26" value="correcto" required> A. Se perciben en reposo uno respecto al otro.</label><br>
+            <label><input type="radio" name="q26" value="incorrecto" required> B. Se percibe una velocidad mayor.</label><br>
+            <label><input type="radio" name="q26" value="incorrecto" required> C. Se percibe una velocidad menor.</label><br>
+            <label><input type="radio" name="q26" value="incorrecto" required> D. Se percibe una aceleración.</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <label>27. Un ciclista pedalea a 15 km/h hacia el este mientras el viento sopla hacia el oeste a 10 km/h. ¿Cuál es la velocidad relativa del ciclista con respecto al viento?</label>
+        <div class="options">
+            <label><input type="radio" name="q27" value="correcto" required> A. 25 km/h hacia el oeste.</label><br>
+            <label><input type="radio" name="q27" value="incorrecto" required> B. 5 km/h hacia el este.</label><br>
+            <label><input type="radio" name="q27" value="incorrecto" required> C. 5 km/h hacia el oeste.</label><br>
+            <label><input type="radio" name="q27" value="incorrecto" required> D. 25 km/h hacia el este.</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <label>28. Un tren se mueve a 100 km/h hacia el norte. Si una persona dentro del tren camina a 3 km/h hacia el sur, ¿cuál es la velocidad de la persona con respecto a un observador en el exterior?</label>
+        <div class="options">
+            <label><input type="radio" name="q28" value="correcto" required> A. 97 km/h hacia el norte.</label><br>
+            <label><input type="radio" name="q28" value="incorrecto" required> B. 103 km/h hacia el norte.</label><br>
+            <label><input type="radio" name="q28" value="incorrecto" required> C. 100 km/h hacia el sur.</label><br>
+            <label><input type="radio" name="q28" value="incorrecto" required> D. 3 km/h hacia el sur.</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <label>29. Un observador en un tren que se mueve a 90 km/h observa otro tren que se mueve en la misma dirección a 110 km/h. ¿Cuál es la velocidad relativa del segundo tren con respecto al primero?</label>
+        <div class="options">
+            <label><input type="radio" name="q29" value="correcto" required> A. 20 km/h.</label><br>
+            <label><input type="radio" name="q29" value="incorrecto" required> B. 110 km/h.</label><br>
+            <label><input type="radio" name="q29" value="incorrecto" required> C. 200 km/h.</label><br>
+            <label><input type="radio" name="q29" value="incorrecto" required> D. 90 km/h.</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <label>30. ¿Cómo se observa el movimiento de una bola que cae desde un avión en vuelo desde el punto de vista de un pasajero dentro del avión?</label>
+        <div class="options">
+            <label><input type="radio" name="q30" value="correcto" required> A. Parece caer en línea recta hacia abajo.</label><br>
+            <label><input type="radio" name="q30" value="incorrecto" required> B. Parece moverse hacia atrás.</label><br>
+            <label><input type="radio" name="q30" value="incorrecto" required> C. Parece moverse hacia adelante.</label><br>
+            <label><input type="radio" name="q30" value="incorrecto" required> D. Parece moverse en un arco.</label>
+        </div>
+    </div>
+
+    <button class="submit-btn" onclick="calculateGrade()">Obtener Calificación</button>
+</div>
+
+<div class="popup" id="finalPopup" style="display: none;">
+    <div class="popup-content">
+        <h2>Resultado de la Evaluación</h2>
+        <p id="nombreFinal"></p>
+        <p id="nieFinal"></p>
+        <p id="gradeFinal"></p>
+        <button onclick="closePopup()">Cerrar</button>
+    </div>
+</div>
+
+<script>
+    const authorizedNIEs = [
+        "4839280", "19711634", "4839293", "6297544", "19711644",
+        "3850927", "19711635", "4267835", "3293986", "19711278",
+        "19711637", "4267839", "19806177", "4839298", "4267832",
+        "4267843", "4839279", "4839301", "19964688"
+    ];
+
+    let timer;
+    let totalSeconds = 1800;
+
+    window.onload = function() {
+        document.getElementById('popup').style.display = 'flex';
+    };
+
+    function validatePopup() {
+        const nombre = document.getElementById('nombre').value;
+        const nie = document.getElementById('nie').value;
+
+        if (nombre === "" || nie === "") {
+            alert("Por favor, complete todos los campos.");
+        } else if (!authorizedNIEs.includes(nie)) {
+            alert("NIE no autorizado.");
+        } else {
+            document.getElementById('popup').style.display = 'none';
+            document.getElementById('evaluation').style.display = 'block';
+            startTimer();
         }
+    }
 
-        function loadQuiz() {
-            const quizContainer = document.getElementById('quiz');
-            quizContainer.innerHTML = '';
-            quizData.forEach((data, index) => {
-                const questionContainer = document.createElement('div');
-                questionContainer.className = 'question';
-
-                const questionTitle = document.createElement('h3');
-                questionTitle.innerText = `${index + 1}. ${data.question}`;
-                questionContainer.appendChild(questionTitle);
-
-                const optionsList = document.createElement('ul');
-                optionsList.className = 'options';
-
-                shuffle(data.answers).forEach(answer => {
-                    const option = document.createElement('li');
-                    const optionLabel = document.createElement('label');
-                    const optionInput = document.createElement('input');
-                    optionInput.type = 'radio';
-                    optionInput.name = `question${index}`;
-                    optionInput.value = answer.correct;
-                    optionLabel.appendChild(optionInput);
-                    optionLabel.appendChild(document.createTextNode(answer.text));
-                    option.appendChild(optionLabel);
-                    optionsList.appendChild(option);
-                });
-
-                questionContainer.appendChild(optionsList);
-                quizContainer.appendChild(questionContainer);
-            });
-        }
-
-        function submitQuiz() {
-            if (attempt >= maxAttempts) {
-                alert('Has alcanzado el número máximo de intentos.');
-                return;
+    function startTimer() {
+        timer = setInterval(function() {
+            totalSeconds--;
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            document.getElementById('timer').textContent = `Tiempo restante: ${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
+            if (totalSeconds <= 0) {
+                clearInterval(timer);
+                calculateGrade();
             }
+        }, 1000);
+    }
 
-            const resultsContainer = document.getElementById('results');
-            const answers = document.querySelectorAll('input[type="radio"]:checked');
-            let score = 0;
+    function calculateGrade() {
+        const totalQuestions = document.querySelectorAll('.question').length;
+        const correctAnswers = document.querySelectorAll('input[type="radio"]:checked[value="correcto"]').length;
+        const maxPoints = 10;
+        const grade = (correctAnswers / totalQuestions) * maxPoints;
 
-            quizData.forEach((data, index) => {
-                const selected = answers[index] ? answers[index].value === 'true' : null;
-                if (selected === true) {
-                    score += 0.4; // Each correct answer is worth 0.4 points
-                }
-            });
+        document.getElementById('nombreFinal').textContent = "Nombre: " + document.getElementById('nombre').value;
+        document.getElementById('nieFinal').textContent = "NIE: " + document.getElementById('nie').value;
+        document.getElementById('gradeFinal').textContent = "Su calificación es: " + grade.toFixed(2) + " de " + maxPoints;
 
-            score = Math.round(score * 10) / 10; // Round to one decimal place
-            let feedback = quizData.map((data, index) => {
-                const selected = answers[index] ? answers[index].value === 'true' : null;
-                let result;
-                if (selected === null) {
-                    result = "No contestada";
-                } else if (selected === true) {
-                    result = "Correcta";
-                } else {
-                    result = "Incorrecta";
-                }
-                return `<p>${index + 1}. ${result}</p>`;
-            }).join("");
+        document.getElementById('finalPopup').style.display = 'flex';
+    }
 
-            resultsContainer.innerHTML = `<h3>Resultados:</h3><p>Puntaje: ${score} / 10</p>${feedback}`;
+    function closePopup() {
+        document.getElementById('finalPopup').style.display = 'none';
+    }
+</script>
 
-            attempt++;
-            if (attempt >= maxAttempts) {
-                alert('Has alcanzado el número máximo de intentos.');
-            }
-        }
-
-        document.getElementById('submit').addEventListener('click', submitQuiz);
-
-        loadQuiz();
-    </script>
 </body>
 </html>
